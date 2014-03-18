@@ -1,0 +1,13 @@
+<% if Spree::PaymentMethod.supporting_partial_payments.present? %>
+Club my payment with
+<table id="split_payment_options">
+<% Spree::PaymentMethod.supporting_partial_payments.order('partial_priority desc').each do |payment_method| %>
+  <tr>
+    <td><label>
+      <%= check_box_tag "order[split_payments][][payment_method_id]", payment_method.id %>
+      <%= Spree.t(payment_method.name) %>
+    </label></td>
+  </tr>
+<% end %>
+</table>
+<% end %>

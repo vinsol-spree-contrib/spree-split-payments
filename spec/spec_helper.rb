@@ -30,7 +30,7 @@ require 'spree/testing_support/authorization_helpers'
 require 'spree/testing_support/url_helpers'
 
 # Requires factories defined in lib/spree_spree-split-payments/factories.rb
-require 'split-payments/factories'
+require 'spree_split_payments/factories'
 
 RSpec.configure do |config|
   config.include FactoryGirl::Syntax::Methods

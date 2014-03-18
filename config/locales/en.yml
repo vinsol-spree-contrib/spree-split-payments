@@ -3,3 +3,6 @@
 
 en:
   hello: "Hello world"
+  spree:
+    supports_partial_payment: "Use it for partial payments"
+    partial_priority: "Set Priority"

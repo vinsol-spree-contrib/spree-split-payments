@@ -1,2 +1,2 @@
 require 'spree_core'
-require 'spree-split-payments/engine'
+require 'spree_split_payments/engine'
