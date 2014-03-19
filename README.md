@@ -40,7 +40,9 @@ so you can either
 #models/spree/user_decorator.rb
 alias_method :loyalty_points_for_partial_payments, :loyalty_points_equivalent_currency
 
-#where loyalty_points_equivalent_currency is the method provided by #Spree::PaymentMethod::LoyaltyPoints extension.
+#where loyalty_points_equivalent_currency is the method provided by
+
+#Spree::PaymentMethod::LoyaltyPoints extension.
 ```
 
 2)define a method under user class
