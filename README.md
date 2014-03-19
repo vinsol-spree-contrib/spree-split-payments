@@ -1,8 +1,8 @@
 Spree-split-payments
 =========================
-This extension lets you provide the feature for the store to allow user to club payment methods to process the payment for the order.
+This extension provides the feature for a spree store to allow user to club payment methods to pay for the order.
 
-Easily configurable from the admin end where admin can select which payment methods should be allowed for clubbing and their priorities which can be used while creating payments and displaying the options to the user.
+Easily configurable from the admin end where one can select which payment methods should be allowed for clubbing and their priorities which can be used while creating payments and displaying them to the user.
 
 Installation
 ------------
@@ -26,19 +26,22 @@ The extension needs a way to find out the maximum amount that can be made via a 
 
 ```ruby
 #{payment_method.class.name.demodulize.underscore}_for_partial_payments
+
+#for example : for Spree::PaymentMethod::LoyaltyPoints it calls for
+#loyalty_points_for_partial_payments 
+#on current_user
 ```
 
-like for PaymentMethod : Spree::PaymentMethod::LoyaltyPoints it calls for
-loyalty_points_for_partial_payments on current_user
-
 so you can either 
+
 1)alias an exising method like
 
 ```ruby
 #models/spree/user_decorator.rb
 alias_method :loyalty_points_for_partial_payments, :loyalty_points_equivalent_currency
+
+#where loyalty_points_equivalent_currency is the method provided by #Spree::PaymentMethod::LoyaltyPoints extension.
 ```
-where loyalty_points_equivalent_currency is the method provided by Spree::PaymentMethod::LoyaltyPoints extension.
 
 2)define a method under user class
   for example for Spree::PaymentMethod::LoyaltyPoints
@@ -53,6 +56,8 @@ def loyalty_points_for_partial_payments
 end
 
 ....
+
+end
 ```
 
 Testing
