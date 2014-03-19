@@ -1,4 +1,4 @@
-Spree-split-payments
+Spree-split-payments [![Code Climate](https://codeclimate.com/github/vinsol/spree-split-payments.png)](https://codeclimate.com/github/vinsol/spree-split-payments) [![Build Status](https://travis-ci.org/vinsol/spree-split-payments.png?branch=master)](https://travis-ci.org/vinsol/spree-split-payments)
 =========================
 This extension provides the feature for a spree store to allow user to club payment methods to pay for the order.
 
