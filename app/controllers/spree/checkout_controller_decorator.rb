@@ -8,7 +8,8 @@ Spree::CheckoutController.class_eval do
       payment_method = Spree::PaymentMethod.where(:id => payment_method_id).first
       if payment_method
         payment_amount = spree_current_user.maximum_partial_payment_for_payment_method(payment_method)
-        payment_amount = @order.outstanding_balance if @order.outstanding_balance < payment_amount
+        outstanding_balance = @order.outstanding_balance
+        payment_amount = outstanding_balance if outstanding_balance < payment_amount
         payment = @order.payments.create(:payment_method_id => payment_method_id, :state => 'pending', amount: payment_amount, :is_partial => true) unless payment_amount.zero?
       end
     end
@@ -37,15 +38,4 @@ Spree::CheckoutController.class_eval do
       {}
     end
   end
-
-   def load_order
-    p 'loading order'
-        @order = current_order
-        redirect_to spree.cart_path and return unless @order
-
-        if params[:state]
-          redirect_to checkout_state_path(@order.state) if @order.can_go_to_state?(params[:state]) && !skip_state_validation?
-          @order.state = params[:state]
-        end
-      end
 end
