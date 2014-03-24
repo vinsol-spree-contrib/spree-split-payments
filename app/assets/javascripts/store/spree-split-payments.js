@@ -1,5 +1,7 @@
 //= require store/spree_frontend
 $(document).ready(function() {
+
+  // [TODO] Please extract the logic written below into a function with an appropriate name and call same function here.
   amountDivs = $("#split-payments-data div");
   if(amountDivs.length > 0) {
     for(i = 0; i < amountDivs.length; i++) {
@@ -8,6 +10,8 @@ $(document).ready(function() {
   }
 
   $("input[name='order[split_payments][][payment_method_id]']").click(function() {
+    // [TODO] Please extract the logic written below into a function with an appropriate name and call same function here.
+    // Also break into multiple functions if needed/possible.
     selected_partial_methods = $("input[name='order[split_payments][][payment_method_id]']:checked");
     partial_payment_total = 0;
     if(selected_partial_methods.length > 0) {

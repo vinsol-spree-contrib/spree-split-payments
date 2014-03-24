@@ -2,16 +2,20 @@ Spree::CheckoutController.class_eval do
   before_action :extract_partial_payments,
                 only: :update, if: -> { process_split_payments? }
 
+  #[TODO] create_split_payments name seems more appropriate. What you say?
+  # This should be private method
   def extract_partial_payments
     payment_method_ids = params['order']['split_payments']
                          .map { |attribute| attribute['payment_method_id'] }
 
+    #[TODO] Shouldn't we get only active payment methods here. Also, can we find all payment methods at once here and use them.
     payment_method_ids.each do |payment_method_id|
       payment_method = Spree::PaymentMethod.where(id: payment_method_id).first
       create_split_payment_for(payment_method) if payment_method
     end
   end
 
+  #[TODO] We should break this into smaller methods with appropriate names. Please discuss this with me.
   # over write this to use outstanding_amount instead of total amount
   # for payment_attributes amount assignment
   def object_params
@@ -40,9 +44,11 @@ Spree::CheckoutController.class_eval do
   private
 
     def process_split_payments?
+      #[TODO] We should extract first condition into a method. Say payment_state? OR is_payment_state? OR anything you thing suites best
       params[:state] == 'payment' && params['order']['split_payments']
     end
-
+    
+    #[TODO] This should  be a part of model and should be in a transition. If at any point somthing went wrong everything should rollback
     def create_split_payment_for(payment_method)
       payment_amount = spree_current_user.maximum_partial_payment_for_payment_method(payment_method)
       balance = @order.outstanding_balance

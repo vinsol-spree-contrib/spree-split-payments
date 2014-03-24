@@ -1,3 +1,5 @@
+#[TODO] I am not sure why we have hard coded 1..5 in select options OR AM I missing something here
+# Also I am unabel to understand reason of using label_tag instead of label here.
 Deface::Override.new(
   virtual_path: 'spree/admin/payment_methods/_form',
   name: 'add partial payment form fields',
