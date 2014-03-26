@@ -1,4 +1,3 @@
-//= require store/spree_frontend
 Spree.fill_in_pm_amounts = function() {
 // [TODO] Please extract the logic written below into a function with an appropriate name and call same function here.
   amountDivs = $("#split-payments-data div");
@@ -20,14 +19,6 @@ Spree.find_partial_payments_total = function(value) {
   return partial_payment_total;
 }
 
-Spree.disable_unchecked_partial_methods = function() {
-  $("input[name='order[split_payments][][payment_method_id]']:unchecked").attr("disabled", "disabled");
-}
-
-Spree.enable_all_partial_methods = function() {
-  $("input[name='order[split_payments][][payment_method_id]']").attr("disabled", false);
-}
-
 $(document).ready(function() {
 
   Spree.fill_in_pm_amounts();
@@ -38,9 +29,8 @@ $(document).ready(function() {
     partial_payment_total = Spree.find_partial_payments_total($(this).val());
     
     if(partial_payment_total >= order_balance ) {
-      Spree.disable_unchecked_partial_methods();
-    } else {
-      Spree.enable_all_partial_methods();
+      $(this).attr('checked', false);
+      alert('exceeding order total');
     }
   });
 });
