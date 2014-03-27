@@ -6,11 +6,11 @@ describe 'Spree::Payment' do
     context 'for partial payments' do
       before do
         @payment = order.payments.new(is_partial: true)
-        allow(@payment).to receive(:complete).and_return(true)
+        allow(@payment).to receive(:pend).and_return(true)
       end
 
-      it 'calls for complete on save' do
-        expect(@payment).to receive(:complete).and_return(true)
+      it 'calls for pend on save' do
+        expect(@payment).to receive(:pend).and_return(true)
         @payment.save!
       end
     end
@@ -18,8 +18,8 @@ describe 'Spree::Payment' do
     context 'for non-partial payments' do
       before { @payment = order.payments.new }
 
-      it 'calls for complete on save' do
-        expect(@payment).to_not receive(:complete)
+      it 'calls for pend on save' do
+        expect(@payment).to_not receive(:pend)
         @payment.save!
       end
     end

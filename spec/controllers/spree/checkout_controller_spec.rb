@@ -16,15 +16,20 @@ describe Spree::CheckoutController do
     controller.instance_variable_set(:@order, order)
     @payment_method = mock_model(Spree::PaymentMethod,
                                  type: 'Spree::PaymentMethod::Check')
+    allow(Spree::PaymentMethod).to receive(:supporting_partial_payments).and_return(Spree::PaymentMethod)
+    # allow(Spree::PaymentMethod).to receive(:where).with({:deleted_at=>nil}).and_return(Spree::PaymentMethod)
+    allow(Spree::Payment.any_instance).to receive(:mark_pending_if_partial).and_return(true)
+    allow(order).to receive(:update_attributes).and_return(false)
+    allow(order).to receive(:outstanding_balance).and_return(100)
   end
 
-  describe '#extract_partial_payments' do
+  describe '#insert_payments_using_split_payments' do
     def send_request(params = {})
       put :update, params.merge!(use_route: 'spree')
     end
 
     context 'when state is not payment' do
-      it { controller.should_not_receive(:extract_partial_payments) }
+      it { controller.should_not_receive(:insert_payments_using_split_payments) }
       after do
         send_request(
           order: {
@@ -34,7 +39,7 @@ describe Spree::CheckoutController do
     end
 
     context 'when state is payment but without any split payment' do
-      it { controller.should_not_receive(:extract_partial_payments) }
+      it { controller.should_not_receive(:insert_payments_using_split_payments) }
       after do
         send_request(
           order: {
@@ -45,49 +50,52 @@ describe Spree::CheckoutController do
 
     context 'when state is payment and split payment attributes present' do
       context 'payment method not found' do
+        it { expect(Spree::PaymentMethod).to receive(:supporting_partial_payments).and_return(Spree::PaymentMethod) } 
         it { Spree::PaymentMethod.should_receive(:where).with(id: '1').and_return([]) }
-        it { expect(user).to_not receive(:maximum_partial_payment_for_payment_method) }
+        it { expect(controller).to_not receive(:find_amount_for_partial_payment_for) }
       end
 
       context 'payment method is found' do
         before do
-          allow(order).to receive(:total).and_return(100)
           allow(Spree::PaymentMethod).to receive(:where).with(id: '1').and_return([@payment_method])
           allow(user).to receive(:maximum_partial_payment_for_payment_method).with(@payment_method).and_return(payment_method_partial_payment)
-          @partial_payment = mock_model(Spree::Payment)
-          @payments = [@partial_payment]
-          allow(@partial_payment).to receive(:payment_method).and_return(@payment_method)
-          allow(@payments).to receive(:completed).and_return([])
-          allow(@payments).to receive(:valid).and_return([])
-          allow(@payments).to receive(:create).and_return(@partial_payment)
-          allow(order).to receive(:payments).and_return(@payments)
+          # allow(controller).to receive(:insert_split_payment_for).with('1', payment_method_partial_payment).and_return(true)
+        end
+        
+        it { expect(Spree::PaymentMethod).to receive(:where).with(id: '1').and_return([@payment_method]) }  
+        it { expect(order).to receive(:outstanding_balance).and_return(order.total) }
+
+        context 'when payment amount is not zero' do
+          it { expect(user).to receive(:maximum_partial_payment_for_payment_method).with(@payment_method).and_return(payment_method_partial_payment) }
+          it { expect(controller).to receive(:insert_split_payment_for).with('1', payment_method_partial_payment).and_return(true) }
         end
 
-        it { expect(user).to receive(:maximum_partial_payment_for_payment_method).with(@payment_method).and_return(payment_method_partial_payment) }
-        it { Spree::PaymentMethod.should_receive(:where).with(id: '1').and_return([@payment_method]) }
+        context 'when payment amount is zero' do
+          before { allow(user).to receive(:maximum_partial_payment_for_payment_method).with(@payment_method).and_return(0) }
+          
+          it { expect(user).to receive(:maximum_partial_payment_for_payment_method).with(@payment_method).and_return(0) }
+          it { expect(controller).to_not receive(:insert_split_payment_for) }
+        end
 
-        context 'outstanding balance > payment_method_partial_payment' do
-          it { expect(order).to receive(:outstanding_balance).and_return(order.total) }
-          it { expect(@payments).to receive(:create).with(payment_method_id: @payment_method.id, state: 'pending', amount: payment_method_partial_payment, is_partial: true).and_return(@partial_payment) }
-
-          context 'payment_method_partial_payment is 0' do
-            before { allow(user).to receive(:maximum_partial_payment_for_payment_method).with(@payment_method).and_return(0) }
-            it { expect(user).to receive(:maximum_partial_payment_for_payment_method).with(@payment_method).and_return(0) }
-            it { expect(@payments).to_not receive(:create) }
+        context '#split payment inserted and amount is updated for last payment' do
+          before do
+            allow(order).to receive(:has_checkout_step?).and_return(true)
+            allow(order).to receive(:payment?).and_return(true)
           end
-        end
 
-        context 'outstanding balance < payment_method_partial_payment' do
-          before { allow(user).to receive(:maximum_partial_payment_for_payment_method).with(@payment_method).and_return(payment_method_partial_payment + order.total) }
-          it { expect(order).to receive(:outstanding_balance).and_return(order.total) }
-          it { expect(@payments).to receive(:create).with(payment_method_id: @payment_method.id, state: 'pending', amount: order.total.to_d, is_partial: true).and_return(@partial_payment) }
+          it { expect(order).to receive(:update_attributes).with({
+            "payments_attributes" => [
+              {"amount"=>10, "payment_method_id"=>"1", "is_partial"=>true},
+              {"amount"=>90, "payment_method_id"=>"1"}
+            ]}).and_return(false) }
         end
       end
 
       after do
         send_request(
           order: {
-            split_payments: [{ payment_method_id: '1' }] },
+            split_payments: [{ payment_method_id: '1' }],
+            payments_attributes: [{ payment_method_id: '1' }]},
           state: 'payment')
       end
     end
