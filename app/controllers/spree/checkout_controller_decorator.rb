@@ -29,8 +29,7 @@ Spree::CheckoutController.class_eval do
     end
 
     def find_amount_for_partial_payment_for(payment_method)
-      payment_amount = spree_current_user.maximum_partial_payment_for_payment_method(payment_method)
-      @order_balance_after_split_payment < payment_amount ? @order_balance_after_split_payment : payment_amount    
+      spree_current_user.maximum_partial_payment_for_payment_method(payment_method)
     end
 
     #[TODO] We should break this into smaller methods with appropriate names. Please discuss this with me.

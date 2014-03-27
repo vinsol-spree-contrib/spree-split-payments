@@ -1,7 +1,7 @@
 require 'spec_helper'
 
 describe Spree::Order do
-  let(:order) { Spree::Order.create! }
+  let(:order) { Spree::Order.create!(:email => 'test-account@myweb.com') }
 
   describe 'process_partial_payments' do
     before do
@@ -20,14 +20,6 @@ describe Spree::Order do
   end
 
   context 'state machine' do
-    before do
-    end
-
-    it { expect(order).to receive(:process_partial_payments).and_return(true) }
-
-    after do 
-      order.state = 'complete'
-      order.save
-    end
+    it { Spree::Order.state_machine.callbacks[:before].select { |callback| callback.instance_eval{@methods}.include?(:process_partial_payments) && callback.branch.state_requirements.any? {|req| req[:to].values.include?(:complete)} }.should_not be_blank }
   end
 end
