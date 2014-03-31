@@ -16,7 +16,7 @@ describe Spree::Order do
     it { expect(@payments).to receive(:partial).and_return(@payments) }
     it { expect(@payment).to receive(:complete).and_return(true) }
 
-    after { order.process_partial_payments }
+    after { order.send(:process_partial_payments) }
   end
 
   context 'state machine' do
