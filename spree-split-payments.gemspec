@@ -2,13 +2,15 @@
 Gem::Specification.new do |s|
   s.platform    = Gem::Platform::RUBY
   s.name        = 'spree-split-payments'
-  s.version     = '2.1.0'
-  s.summary     = 'Provide Split Payments functionality for a Spree Store during checkout'
+  s.version     = '1.0.0'
   s.required_ruby_version = '>= 1.9.3'
 
   s.author    = 'Manish Kangia'
   s.email     = 'info@vinsol.com'
   s.homepage  = 'http://vinsol.com'
+
+  s.summary   = 'Provides the feature for a Spree store to allow user to club payment methods to pay for the order'
+  s.license   = 'MIT'
 
   s.files       = `git ls-files`.split("\n")
   s.require_path = 'lib'

@@ -1,4 +1,3 @@
-<!-- [TODO] I guess here we need active payment modes scope. -->
 <% partial_payment_methods = Spree::PaymentMethod.supporting_partial_payments %>
 <% if partial_payment_methods.present? %>
   <%= render :partial => '/shared/split_payments_data', :locals => { :payment_methods => partial_payment_methods } %>
