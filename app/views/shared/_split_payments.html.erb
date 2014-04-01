@@ -1,15 +1,11 @@
-<!-- [TODO] I guess here we need active payment modes scope. Can we move this condition to the file where we are rendering this partial? -->
-<!-- Move this condition to the parent view, how does that make it better? -->
-<!--  Please take care of indentation too -->
+<!-- [TODO] I guess here we need active payment modes scope. -->
 <% partial_payment_methods = Spree::PaymentMethod.supporting_partial_payments %>
 <% if partial_payment_methods.present? %>
   <%= render :partial => '/shared/split_payments_data', :locals => { :payment_methods => partial_payment_methods } %>
   Club my payment with
   <table id="split_payment_options">
-  <!-- [TODO] No query logic in views -->
   <% partial_payment_methods.each do |payment_method| %>
     <tr>
-      <!-- [TODO] Not sure why we are adding a label inside a label -->
       <td>
         <label>
         <%= check_box_tag "order[split_payments][][payment_method_id]", payment_method.id %>
@@ -21,8 +17,7 @@
   <% end %>
   </table>
 <% end %>
-<!-- [TODO] No inline JS please -->
-<!-- possible way to ignore this script would be to save the outstanding balance in the html and then fetch it in js. But Any better approach? -->
+<!-- [TODO] No inline JS -->
 <script>
   var order_balance = <%= current_order.outstanding_balance %>
 </script>

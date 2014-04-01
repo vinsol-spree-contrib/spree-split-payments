@@ -3,8 +3,6 @@ Spree::CheckoutController.class_eval do
                 only: :update, if: -> { process_split_payments? }
 
   private
-    #[TODO] create_split_payments name seems more appropriate. What you say?
-    # This should be private method
     def insert_payments_using_split_payments
       @order_balance_after_split_payment = @order.outstanding_balance
 
@@ -32,7 +30,6 @@ Spree::CheckoutController.class_eval do
       spree_current_user.maximum_partial_payment_for_payment_method(payment_method)
     end
 
-    #[TODO] We should break this into smaller methods with appropriate names. Please discuss this with me.
     # over write this to use outstanding_amount instead of total amount
     # for payment_attributes amount assignment
     def object_params
@@ -63,7 +60,6 @@ Spree::CheckoutController.class_eval do
     end
 
     def process_split_payments?
-      #[TODO] We should extract first condition into a method. Say payment_state? OR is_payment_state? OR anything you thing suites best
       payment_step? && params['order']['split_payments']
     end
 end
