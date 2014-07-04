@@ -1,36 +1,91 @@
-Spree.fill_in_pm_amounts = function() {
-// [TODO] Please extract the logic written below into a function with an appropriate name and call same function here.
-  amountDivs = $("#split-payments-data div");
-  if(amountDivs.length) {
-    for(i = 0; i < amountDivs.length; i++) {
-      $("label.pm-amount[data-pm-id='"+ amountDivs[i].getAttribute('data-pm-id') +"']").html(amountDivs[i].getAttribute('data-pm-amount'));
-    }
-  }
-}
+SplitPayments = {
+  initialize: function() {
+    this.non_partial_payment_methods = $("[name='order[payments_attributes][0][payment_method_id]']");
+    this.handleFormSubmission();
+    this.handleClickOnNonPartialPaymentMethod();
+    this.handlePartialPayments();
+    this.hidePaymentDetails();
+  },
 
-Spree.find_partial_payments_total = function(value) {
-  partial_payment_total = 0
-  selected_partial_methods = $("input[name='order[split_payments][][payment_method_id]']:checked");
-  if(selected_partial_methods.length) {
-    for(i = 0; i < selected_partial_methods.length; i++) {
-      partial_payment_total += parseInt($("#split-payments-data div[data-pm-id='"+ value +"']")[0].getAttribute('data-pm-amount'));
+  handlePartialPayments: function() {
+    $('.partial_payment_method').click(function() {
+      var $payment_amount = $('#payment_method_' + $(this).val() + '_amount');
+      if(this.checked) {
+        $payment_amount.attr('name', $payment_amount.data('name'));
+      } else {
+        $payment_amount.attr('name', '');
+      }
+    })
+  },
+
+  showPaymentDetails: function(pm_id) {
+    $('#payment_method_' + pm_id).show();
+  },
+
+  handleClickOnNonPartialPaymentMethod: function() {
+    var self = this;
+    $("[type='checkbox'][name*='payment_method_id']").click(function() {
+      if(this.checked) {
+        self.showPaymentDetails($(this).val());
+      } else {
+        self.hidePaymentDetails([$(this).val()]);
+      }
+    });
+    $("[type='radio'][name*='payment_method_id']").click(function() {
+      var non_partial_payment_method_ids = self.non_partial_payment_methods.map(function(index, pm) { return $(pm).val(); })
+      self.hidePaymentDetails(non_partial_payment_method_ids);
+      self.showPaymentDetails($(this).val());
+    })
+  },
+  
+  hidePaymentDetails: function(pm_ids) {
+    pm_ids = pm_ids || [""]
+    $.each(pm_ids, function(index, pm_id) {
+      $('#payment-methods li[id^="payment_method_' + pm_id + '"]').hide()
+    })
+  },
+
+  uncheckNonPartialPaymentMethod: function() {
+    this.non_partial_payment_methods.prop('checked', false)
+    this.hidePaymentDetails();
+  },
+
+  amount: function() {
+    var sum = 0
+    $("input[type='checkbox'][name*='payment_method_id']:checked").each(function() {
+      sum += +($("[name='order[payments_attributes][" + $(this).val() + "][amount]']").val())
+    });
+    return sum;
+  },
+
+  checkOrderTotal: function() {
+    var amount = this.amount();
+    if(amount > order_balance) {
+      alert('exceeding order total');
+    } else if(amount == order_balance) {
+      this.uncheckNonPartialPaymentMethod();
+      return true;
+    } else {
+      if(!this.non_partial_payment_methods.filter(':checked').length) {
+        alert('amount is less than order total');
+      } else { 
+        return true;
+      }
     }
+  },
+
+  handleFormSubmission: function() {
+    var self = this, amount = this.amount();
+    $('#checkout_form_payment input[type="submit"]').click(function(event) {
+      if(!self.checkOrderTotal()) {
+        event.preventDefault();
+        return false;
+      }
+    });
   }
-  return partial_payment_total;
 }
 
 $(document).ready(function() {
-
-  Spree.fill_in_pm_amounts();
-  
-  $("input[name='order[split_payments][][payment_method_id]']").click(function() {
-    // [TODO] Please extract the logic written below into a function with an appropriate name and call same function here.
-    // Also break into multiple functions if needed/possible.
-    partial_payment_total = Spree.find_partial_payments_total($(this).val());
-    
-    if(partial_payment_total >= order_balance ) {
-      $(this).attr('checked', false);
-      alert('exceeding order total');
-    }
-  });
+  SplitPayments.initialize();
 });
+

@@ -7,8 +7,14 @@ Spree::User.class_eval do
   #              :loyalty_points_equivalent_currency
 
   def maximum_partial_payment_for_payment_method(payment_method)
-    send(
-      "#{payment_method.class.name.demodulize.underscore}_for_partial_payments"
-      .to_sym)
+    max_amount_method = "#{payment_method.class.name.demodulize.underscore}_for_partial_payments"
+    if respond_to? max_amount_method
+      send max_amount_method
+    else
+      Float::INFINITY
+    end
+    # send(
+    #   "#{payment_method.class.name.demodulize.underscore}_for_partial_payments"
+    #   .to_sym)
   end
 end

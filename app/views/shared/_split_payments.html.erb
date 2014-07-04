@@ -1,20 +1,40 @@
 <% partial_payment_methods = Spree::PaymentMethod.supporting_partial_payments %>
 <% if partial_payment_methods.present? %>
-  <%= render :partial => '/shared/split_payments_data', :locals => { :payment_methods => partial_payment_methods } %>
+  <%#= render :partial => '/shared/split_payments_data', :locals => { :payment_methods => partial_payment_methods } %>
   Club my payment with
-  <table id="split_payment_options">
+  <table id="split_payment_options" border='1'>
+    <tr>
+      <th></th>
+      <th>Payment Method</th>
+      <th>Maximum Amount that can be paid with this method</th>
+      <th>Amount to be paid</th>
+    </tr>
   <% partial_payment_methods.each do |payment_method| %>
+    <% max_amount = [current_order.outstanding_balance, spree_current_user.maximum_partial_payment_for_payment_method(payment_method)].min %>
     <tr>
       <td>
-        <label>
-        <%= check_box_tag "order[split_payments][][payment_method_id]", payment_method.id %>
+        <%= check_box_tag "order[payments_attributes][#{payment_method.id}][payment_method_id]", payment_method.id, false, :class => 'partial_payment_method' %>        
+      </td>
+      <td>
         <%= Spree.t(payment_method.name) %>
-        </label>
-        (<label class="pm-amount" data-pm-id=<%= payment_method.id %>></label>)
+      </td>
+      <td>
+        <%= max_amount %>
+      </td>
+      <td>
+        <%= text_field_tag "", 0, :id => "payment_method_#{payment_method.id}_amount", :data => {:name => "order[payments_attributes][#{payment_method.id}][amount]" } %>
       </td>
     </tr>
   <% end %>
   </table>
+<% end %>
+<% (@order.available_payment_methods - partial_payment_methods).each do |method| %>
+  <p>
+    <label>
+      <%= radio_button_tag "order[payments_attributes][0][payment_method_id]", method.id %>
+      <%= Spree.t(method.name, :scope => :payment_methods, :default => method.name) %>
+    </label>
+  </p>
 <% end %>
 <!-- [TODO] No inline JS -->
 <script>
