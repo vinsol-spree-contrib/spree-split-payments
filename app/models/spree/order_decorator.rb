@@ -29,4 +29,34 @@ Spree::Order.class_eval do
       end
     end
   end
+
+  def update_params_payment_source
+    if has_checkout_step?("payment") && self.payment?
+      insert_source_params
+
+      if @updating_params[:order][:payments_attributes]['0']
+        @updating_params[:order][:payments_attributes]['0'][:amount] = order_total_after_partial_payments
+      end
+    end
+  end
+
+
+  def insert_source_params
+    if @updating_params[:payment_source].present?
+      @updating_params[:order][:payments_attributes].values.each do |payment_attrs|
+        source_params = @updating_params[:payment_source][payment_attrs[:payment_method_id]]
+        payment_attrs[:not_to_be_invalidated] = true
+        payment_attrs[:source_attributes] = source_params if source_params
+      end
+      @updating_params.delete(:payment_source)
+    end
+  end
+
+  def order_total_after_partial_payments
+    amount = 0
+    @updating_params[:order][:payments_attributes].values.each do |payment_attrs|
+      amount += payment_attrs[:amount].to_f
+    end
+    outstanding_balance - amount
+  end
 end
