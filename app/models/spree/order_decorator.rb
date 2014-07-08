@@ -3,10 +3,19 @@ Spree::Order.class_eval do
   before_validation :invalidate_old_payments, :if => :payment?
   validate :ensure_only_one_non_partial_payment_method_present_if_multiple_payments, :if => :payment?
 
+  def available_payment_methods
+    @available_payment_methods ||= Spree::PaymentMethod.available_on_checkout(user ? false : true)
+  end
+
+  def available_partial_payments
+    @available_partial_payments ||= available_payment_methods.select(&:for_partial?)
+  end
+
   private
   # def process_partial_payments
   #   self.payments.pending.partial.each { |payment| payment.complete }
   # end
+
   def checkout_payments
     payments.select { |payment| payment.checkout? }
   end
@@ -22,7 +31,7 @@ Spree::Order.class_eval do
   def ensure_only_one_non_partial_payment_method_present_if_multiple_payments
     if checkout_payments.many?
       payment_method_ids = checkout_payments.map(&:payment_method_id)
-      non_partial_payment_method_ids =  payment_method_ids - Spree::PaymentMethod.supporting_partial_payments.map(&:id)
+      non_partial_payment_method_ids =  payment_method_ids - available_partial_payments.map(&:id)
       if non_partial_payment_method_ids.size > 1
         errors[:base] << "Only one non partial payment method can be clubbed with partial payments."
         return false

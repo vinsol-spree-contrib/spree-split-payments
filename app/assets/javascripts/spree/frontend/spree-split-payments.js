@@ -67,7 +67,7 @@ SplitPayments = {
       return true;
     } else {
       if(!this.non_partial_payment_methods.filter(':checked').length) {
-        alert('amount is less than order total');
+        alert('Please select a payment method with appropriate amount to proceed further');
       } else { 
         return true;
       }
