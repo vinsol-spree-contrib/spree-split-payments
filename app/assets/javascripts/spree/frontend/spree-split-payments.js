@@ -5,6 +5,9 @@ SplitPayments = {
     this.handleClickOnNonPartialPaymentMethod();
     this.handlePartialPayments();
     this.hidePaymentDetails();
+    if(typeof(order_balance) != 'undefined') {
+      order_balance = order_balance.toFixed(4);
+    }
   },
 
   handlePartialPayments: function() {
@@ -55,7 +58,7 @@ SplitPayments = {
     $("input[type='checkbox'][name*='payment_method_id']:checked").each(function() {
       sum += +($("[name='order[payments_attributes][" + $(this).val() + "][amount]']").val())
     });
-    return sum;
+    return sum.toFixed(4);
   },
 
   checkOrderTotal: function() {
