@@ -11,7 +11,7 @@ require 'database_cleaner'
 
 # # Requires factories defined in lib/spree_spree-split-payments/factories.rb
 # require 'spree_split_payments/factories'
-
+Dir[File.join(File.dirname(__FILE__), 'support/**/*.rb')].each { |f| require f }
 RSpec.configure do |config|
   # config.include FactoryGirl::Syntax::Methods
 

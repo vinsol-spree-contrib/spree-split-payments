@@ -1,5 +1,4 @@
 Spree::Order.class_eval do
-  # Spree::Order.state_machine.before_transition :to => :complete, :do => [:invalidate_old_payments]
   before_validation :invalidate_old_payments, :if => :payment?
   validate :ensure_only_one_non_partial_payment_method_present_if_multiple_payments, :if => :payment?
 
@@ -12,9 +11,6 @@ Spree::Order.class_eval do
   end
 
   private
-  # def process_partial_payments
-  #   self.payments.pending.partial.each { |payment| payment.complete }
-  # end
 
   def checkout_payments
     payments.select { |payment| payment.checkout? }
@@ -22,7 +18,7 @@ Spree::Order.class_eval do
 
   def invalidate_old_payments
     checkout_payments.each do |payment|
-      if payment.checkout? && !payment.not_to_be_invalidated
+      if !payment.not_to_be_invalidated
         payment.invalidate!
       end
     end

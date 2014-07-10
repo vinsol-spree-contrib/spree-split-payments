@@ -1,6 +1,0 @@
-<div id="split-payments-data">
-  <% payment_methods.each do |payment_method| %>
-    <div data-pm-id=<%= payment_method.id %> data-pm-amount=<%= spree_current_user.maximum_partial_payment_for_payment_method(payment_method) %>>
-    </div>
-  <% end %>
-</div>

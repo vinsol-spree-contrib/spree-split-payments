@@ -1,9 +1,4 @@
 Spree::PaymentMethod.class_eval do
-  # scope :supporting_partial_payments, -> { active.where(for_partial: true).order('partial_priority desc') }
-
-  def self.active
-    where(active: true)
-  end
 
   def self.available_on_checkout(guest_checkout=false)
     all.select do |p|
@@ -12,5 +7,9 @@ Spree::PaymentMethod.class_eval do
       (!guest_checkout || p.guest_checkout?) && 
       (p.environment == Rails.env || p.environment.blank?)
     end
+  end
+
+  def guest_checkout?
+    true
   end
 end
