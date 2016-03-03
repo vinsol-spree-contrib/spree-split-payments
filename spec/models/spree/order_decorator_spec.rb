@@ -9,9 +9,9 @@ end
 describe Spree::Order do
   let!(:user) { Spree::User.create! :email => 'test@example.com', :password => 'password' }
   let!(:order) { Spree::Order.create!(:email => 'test-account@myweb.com', :total => 500, :user_id => user.id) }
-  let!(:partial_payment_method) { Spree::PaymentMethod::Partial.create! :for_partial => true, :name => 'partial_payment_method', :active => true, :display_on => "", :environment => 'test' }
-  let!(:check) { Spree::PaymentMethod.create! :name => 'check', :active => true, :display_on => "", :environment => 'test' }
-  let!(:credit_card) { Spree::PaymentMethod.create! :name => 'credit card', :active => true, :display_on => "", :environment => 'test' }
+  let!(:partial_payment_method) { Spree::PaymentMethod::Partial.create! :for_partial => true, :name => 'partial_payment_method', :active => true, :display_on => "" }
+  let!(:check) { Spree::PaymentMethod.create! :name => 'check', :active => true, :display_on => "" }
+  let!(:credit_card) { Spree::PaymentMethod.create! :name => 'credit card', :active => true, :display_on => "" }
 
   before do
     @payment1 = Spree::Payment.create! :payment_method_id => partial_payment_method.id, :state => 'checkout', :order_id => order.id
