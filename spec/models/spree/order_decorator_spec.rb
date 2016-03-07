@@ -9,9 +9,9 @@ end
 describe Spree::Order do
   let!(:user) { Spree::User.create! :email => 'test@example.com', :password => 'password' }
   let!(:order) { Spree::Order.create!(:email => 'test-account@myweb.com', :total => 500, :user_id => user.id) }
-  let!(:partial_payment_method) { Spree::PaymentMethod::Partial.create! :for_partial => true, :name => 'partial_payment_method', :active => true, :display_on => "", :environment => 'test' }
-  let!(:check) { Spree::PaymentMethod.create! :name => 'check', :active => true, :display_on => "", :environment => 'test' }
-  let!(:credit_card) { Spree::PaymentMethod.create! :name => 'credit card', :active => true, :display_on => "", :environment => 'test' }
+  let!(:partial_payment_method) { Spree::PaymentMethod::Partial.create! :for_partial => true, :name => 'partial_payment_method', :active => true, :display_on => "" }
+  let!(:check) { Spree::PaymentMethod.create! :name => 'check', :active => true, :display_on => "" }
+  let!(:credit_card) { Spree::PaymentMethod.create! :name => 'credit card', :active => true, :display_on => "" }
 
   before do
     @payment1 = Spree::Payment.create! :payment_method_id => partial_payment_method.id, :state => 'checkout', :order_id => order.id
@@ -25,7 +25,7 @@ describe Spree::Order do
 
     order.instance_variable_set(:@updating_params, @updating_params)
   end
-  
+
   context 'when state is payment' do
     before do
       order.state = 'payment'
@@ -91,7 +91,7 @@ describe Spree::Order do
       @payment5 = order.payments.create! :payment_method_id => partial_payment_method.id, :state => 'checkout', :order_id => order.id, :not_to_be_invalidated => true
       @payment6 = order.payments.create! :payment_method_id => partial_payment_method.id, :state => 'checkout', :order_id => order.id, :not_to_be_invalidated => true
     end
-    
+
     it "marks payment1 as invalid" do
       order.send(:invalidate_old_payments)
       @payment1.reload
@@ -142,7 +142,7 @@ describe Spree::Order do
       end
 
       it "returns false" do
-        order.send(:ensure_only_one_non_partial_payment_method_present_if_multiple_payments).should be_false
+        order.send(:ensure_only_one_non_partial_payment_method_present_if_multiple_payments).should be_falsey
       end
     end
 
