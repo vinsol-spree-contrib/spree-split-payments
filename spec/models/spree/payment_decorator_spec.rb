@@ -37,7 +37,7 @@ describe 'Spree::Payment' do
 
       it "sets is_partial to true" do
         @payment.send(:mark_partial_if_payment_method_is_partial)
-        @payment.is_partial?.should be_true
+        @payment.is_partial?.should be_truthy
       end
     end
 
@@ -48,7 +48,7 @@ describe 'Spree::Payment' do
 
       it "does not set is_partial to true" do
         @payment.send(:mark_partial_if_payment_method_is_partial)
-        @payment.is_partial?.should be_false
+        @payment.is_partial?.should be_falsey
       end
     end
   end

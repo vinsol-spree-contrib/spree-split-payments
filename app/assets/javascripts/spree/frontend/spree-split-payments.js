@@ -40,7 +40,7 @@ SplitPayments = {
       self.showPaymentDetails($(this).val());
     })
   },
-  
+
   hidePaymentDetails: function(pm_ids) {
     pm_ids = pm_ids || [""]
     $.each(pm_ids, function(index, pm_id) {
@@ -69,9 +69,9 @@ SplitPayments = {
       this.uncheckNonPartialPaymentMethod();
       return true;
     } else {
-      if(!this.non_partial_payment_methods.filter(':checked').length) {
+       if(!this.non_partial_payment_methods.filter(':checked').length) {
         alert('Please select a payment method with appropriate amount to proceed further');
-      } else { 
+      } else {
         return true;
       }
     }
