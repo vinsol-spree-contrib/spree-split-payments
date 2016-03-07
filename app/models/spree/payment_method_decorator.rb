@@ -4,8 +4,7 @@ Spree::PaymentMethod.class_eval do
     all.select do |p|
       p.active && 
       (p.display_on.blank? || p.display_on == "frontend" || p.display_on == "both") && 
-      (!guest_checkout || p.guest_checkout?) && 
-      (p.environment == Rails.env || p.environment.blank?)
+      (!guest_checkout || p.guest_checkout?)
     end
   end
 
