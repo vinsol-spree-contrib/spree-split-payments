@@ -1,6 +1,6 @@
 Spree::Order.class_eval do
-  before_validation :invalidate_old_payments, :if => :payment?
-  validate :ensure_only_one_non_partial_payment_method_present_if_multiple_payments, :if => :payment?
+  before_validation :invalidate_old_payments, if: :payment?
+  validate :ensure_only_one_non_partial_payment_method_present_if_multiple_payments, if: :payment?
 
   def available_payment_methods
     @available_payment_methods ||= Spree::PaymentMethod.available_on_checkout(user ? false : true)
@@ -37,10 +37,13 @@ Spree::Order.class_eval do
 
   def update_params_payment_source
     if has_checkout_step?("payment") && self.payment?
-      insert_source_params
-
-      if @updating_params[:order][:payments_attributes]['0']
-        @updating_params[:order][:payments_attributes]['0'][:amount] = order_total_after_partial_payments
+      if @updating_params[:use_existing_card] == "yes"
+        @updating_params[:order][:payments_attributes] = {}
+      else
+        insert_source_params
+        if @updating_params[:order][:payments_attributes]['0']
+          @updating_params[:order][:payments_attributes]['0'][:amount] = order_total_after_partial_payments
+        end
       end
     end
   end
