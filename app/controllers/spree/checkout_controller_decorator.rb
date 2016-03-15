@@ -17,7 +17,7 @@ Spree::CheckoutController.class_eval do
     end
 
     def insert_split_payment_for(payment_method_id, amount)
-      params[:order][:payments_attributes].insert(0, 
+      params[:order][:payments_attributes].insert(0,
         { payment_method_id: payment_method_id,
           is_partial: true,
           amount: amount
@@ -36,10 +36,12 @@ Spree::CheckoutController.class_eval do
       # has_checkout_step? check is necessary due to issue described in #2910
       if @order.has_checkout_step?('payment') && @order.payment?
         if params[:payment_source].present?
-          source_params = params.delete(:payment_source)[params[:order][:payments_attributes].first[:payment_method_id].underscore]
+          params[:order][:payments_attributes].each do |payment_attrs|
+            source_params = params[:payment_source][payment_attrs[:payment_method_id].underscore]
 
-          if source_params
-            params[:order][:payments_attributes].first[:source_attributes] = source_params
+            if source_params
+              payment_attrs[:source_attributes] = source_params
+            end
           end
         end
 
@@ -47,7 +49,6 @@ Spree::CheckoutController.class_eval do
           params[:order][:payments_attributes].last[:amount] = @order_balance_after_split_payment || @order.outstanding_balance
         end
       end
-
       if params[:order]
         params[:order].permit(permitted_checkout_attributes)
       else
