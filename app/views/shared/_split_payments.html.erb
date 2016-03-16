@@ -17,7 +17,7 @@
         <%= Spree.t(payment_method.name) %>
       </td>
       <td>
-        <%= text_field_tag "", 0, id: "payment_method_#{payment_method.id}_amount", class: 'form-control', data: { name: "order[payments_attributes][#{payment_method.id}][amount]" } %>
+        <%= text_field_tag "", 0, id: "payment_method_#{payment_method.id}_amount", class: 'form-control', data: {name: "order[payments_attributes][#{payment_method.id}][amount]" } %>
       </td>
     </tr>
   <% end %>

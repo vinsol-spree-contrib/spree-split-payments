@@ -6,7 +6,7 @@ SplitPayments = {
     this.handleClickOnNonPartialPaymentMethod();
     this.handlePartialPayments();
     this.hidePaymentDetails();
-    if(typeof(order_balance) != 'number') {
+    if(typeof(order_balance) == 'number') {
       order_balance = order_balance.toFixed(4);
     }
   },
@@ -92,4 +92,3 @@ SplitPayments = {
 $(document).ready(function() {
   SplitPayments.initialize();
 });
-
