@@ -10,7 +10,7 @@ describe 'Spree::Payment' do
   let!(:non_partial_payment2) { Spree::Payment.create! :payment_method_id => non_partial_payment_method.id, :order_id => order.id }
 
   describe "self.partial" do
-    it { Spree::Payment.partial.should =~ [partial_payment1, partial_payment2] }
+    it { expect(Spree::Payment.partial).to match_array([partial_payment1, partial_payment2]) }
   end
 
   context 'before_create' do
@@ -19,7 +19,7 @@ describe 'Spree::Payment' do
     end
 
     it "marks payment as partial" do
-      @payment.should_receive(:mark_partial_if_payment_method_is_partial)
+      expect(@payment).to receive(:mark_partial_if_payment_method_is_partial)
       @payment.save!
     end
   end
@@ -37,7 +37,7 @@ describe 'Spree::Payment' do
 
       it "sets is_partial to true" do
         @payment.send(:mark_partial_if_payment_method_is_partial)
-        @payment.is_partial?.should be_true
+        expect(@payment.is_partial?).to be_truthy
       end
     end
 
@@ -48,7 +48,7 @@ describe 'Spree::Payment' do
 
       it "does not set is_partial to true" do
         @payment.send(:mark_partial_if_payment_method_is_partial)
-        @payment.is_partial?.should be_false
+        expect(@payment.is_partial?).to be_falsey
       end
     end
   end

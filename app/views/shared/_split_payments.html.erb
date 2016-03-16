@@ -1,21 +1,23 @@
 <% if @order.available_partial_payments.present? %>
-  Club my payment with
-  <table id="split_payment_options" border='1'>
+  <br>
+  <b>Club my payment with</b>
+  <table id="split_payment_options" class='table' border='2'>
     <tr>
       <th></th>
       <th>Payment Method</th>
       <th>Amount to be paid</th>
     </tr>
+
   <% @order.available_partial_payments.each do |payment_method| %>
     <tr>
       <td>
-        <%= check_box_tag "order[payments_attributes][#{payment_method.id}][payment_method_id]", payment_method.id, false, :class => 'partial_payment_method' %>        
+        <%= check_box_tag "order[payments_attributes][#{payment_method.id}][payment_method_id]", payment_method.id, false, class: 'partial_payment_method' %>
       </td>
       <td>
         <%= Spree.t(payment_method.name) %>
       </td>
       <td>
-        <%= text_field_tag "", 0, :id => "payment_method_#{payment_method.id}_amount", :data => {:name => "order[payments_attributes][#{payment_method.id}][amount]" } %>
+        <%= text_field_tag "", 0, id: "payment_method_#{payment_method.id}_amount", class: 'form-control', data: {name: "order[payments_attributes][#{payment_method.id}][amount]" } %>
       </td>
     </tr>
   <% end %>
@@ -25,7 +27,7 @@
   <p>
     <label>
       <%= radio_button_tag "order[payments_attributes][0][payment_method_id]", method.id %>
-      <%= Spree.t(method.name, :scope => :payment_methods, :default => method.name) %>
+      <%= Spree.t(method.name, scope: :payment_methods, default: method.name) %>
     </label>
   </p>
 <% end %>

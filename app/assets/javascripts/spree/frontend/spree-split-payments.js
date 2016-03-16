@@ -1,11 +1,12 @@
 SplitPayments = {
   initialize: function() {
+    this.use_existing_card_checkbox = $("#use_existing_card_yes");
     this.non_partial_payment_methods = $("[name='order[payments_attributes][0][payment_method_id]']");
     this.handleFormSubmission();
     this.handleClickOnNonPartialPaymentMethod();
     this.handlePartialPayments();
     this.hidePaymentDetails();
-    if(typeof(order_balance) != 'undefined') {
+    if(typeof(order_balance) == 'number') {
       order_balance = order_balance.toFixed(4);
     }
   },
@@ -40,7 +41,7 @@ SplitPayments = {
       self.showPaymentDetails($(this).val());
     })
   },
-  
+
   hidePaymentDetails: function(pm_ids) {
     pm_ids = pm_ids || [""]
     $.each(pm_ids, function(index, pm_id) {
@@ -69,11 +70,11 @@ SplitPayments = {
       this.uncheckNonPartialPaymentMethod();
       return true;
     } else {
-      if(!this.non_partial_payment_methods.filter(':checked').length) {
+      if(this.non_partial_payment_methods.filter(':checked').length || this.use_existing_card_checkbox[0].checked) {
+          return true;
+      } else {
         alert('Please select a payment method with appropriate amount to proceed further');
-      } else { 
-        return true;
-      }
+        }
     }
   },
 
@@ -91,4 +92,3 @@ SplitPayments = {
 $(document).ready(function() {
   SplitPayments.initialize();
 });
-
