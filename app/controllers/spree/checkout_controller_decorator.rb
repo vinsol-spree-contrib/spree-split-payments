@@ -36,12 +36,9 @@ Spree::CheckoutController.class_eval do
       # has_checkout_step? check is necessary due to issue described in #2910
       if @order.has_checkout_step?('payment') && @order.payment?
         if params[:payment_source].present?
-          params[:order][:payments_attributes].each do |payment_attrs|
-            source_params = params[:payment_source][payment_attrs[:payment_method_id].underscore]
-
-            if source_params
-              payment_attrs[:source_attributes] = source_params
-            end
+          source_params = params.delete(:payment_source)
+          params[:order][:payments_attributes].find do |payment_attributes|
+            payment_attributes[:payment_method_id] == source_params.keys.first && payment_attributes[:source_attributes] = source_params.values.first
           end
         end
 
