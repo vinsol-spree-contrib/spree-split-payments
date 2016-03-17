@@ -70,7 +70,8 @@ SplitPayments = {
       this.uncheckNonPartialPaymentMethod();
       return true;
     } else {
-      if(this.non_partial_payment_methods.filter(':checked').length || this.use_existing_card_checkbox[0].checked) {
+      if(this.non_partial_payment_methods.filter(':checked').length ||
+        (this.use_existing_card_checkbox.length && this.use_existing_card_checkbox[0].checked)) {
         return true;
       } else {
         alert('Please select a payment method with appropriate amount to proceed further');
