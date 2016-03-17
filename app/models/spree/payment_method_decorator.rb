@@ -1,11 +1,10 @@
 Spree::PaymentMethod.class_eval do
 
   def self.available_on_checkout(guest_checkout=false)
-    all.select do |p|
-      p.active && 
-      (p.display_on.blank? || p.display_on == "frontend" || p.display_on == "both") && 
-      (!guest_checkout || p.guest_checkout?) && 
-      (p.environment == Rails.env || p.environment.blank?)
+    all.select do |payment_method|
+      payment_method.active &&
+      (payment_method.display_on.blank? || payment_method.display_on == "frontend" || payment_method.display_on == "both") &&
+      (!guest_checkout || payment_method.guest_checkout?)
     end
   end
 

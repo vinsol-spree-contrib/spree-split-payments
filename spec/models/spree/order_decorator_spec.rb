@@ -9,9 +9,9 @@ end
 describe Spree::Order do
   let!(:user) { Spree::User.create! :email => 'test@example.com', :password => 'password' }
   let!(:order) { Spree::Order.create!(:email => 'test-account@myweb.com', :total => 500, :user_id => user.id) }
-  let!(:partial_payment_method) { Spree::PaymentMethod::Partial.create! :for_partial => true, :name => 'partial_payment_method', :active => true, :display_on => "", :environment => 'test' }
-  let!(:check) { Spree::PaymentMethod.create! :name => 'check', :active => true, :display_on => "", :environment => 'test' }
-  let!(:credit_card) { Spree::PaymentMethod.create! :name => 'credit card', :active => true, :display_on => "", :environment => 'test' }
+  let!(:partial_payment_method) { Spree::PaymentMethod::Partial.create! :for_partial => true, :name => 'partial_payment_method', :active => true, :display_on => "" }
+  let!(:check) { Spree::PaymentMethod.create! :name => 'check', :active => true, :display_on => "" }
+  let!(:credit_card) { Spree::PaymentMethod.create! :name => 'credit card', :active => true, :display_on => "" }
 
   before do
     @payment1 = Spree::Payment.create! :payment_method_id => partial_payment_method.id, :state => 'checkout', :order_id => order.id
@@ -25,19 +25,19 @@ describe Spree::Order do
 
     order.instance_variable_set(:@updating_params, @updating_params)
   end
-  
+
   context 'when state is payment' do
     before do
       order.state = 'payment'
     end
 
     it "ensures only one non partial payment method is present" do
-      order.should_receive(:ensure_only_one_non_partial_payment_method_present_if_multiple_payments)
+      expect(order).to receive(:ensure_only_one_non_partial_payment_method_present_if_multiple_payments)
       order.save
     end
 
     it "invalidates old payments" do
-      order.should_receive(:invalidate_old_payments)
+      expect(order).to receive(:invalidate_old_payments)
       order.save
     end
   end
@@ -48,12 +48,12 @@ describe Spree::Order do
     end
 
     it "does not run payments validation" do
-      order.should_not_receive(:ensure_only_one_non_partial_payment_method_present_if_multiple_payments)
+      expect(order).not_to receive(:ensure_only_one_non_partial_payment_method_present_if_multiple_payments)
       order.save
     end
 
     it "does not invalidate old payments" do
-      order.should_not_receive(:invalidate_old_payments)
+      expect(order).not_to receive(:invalidate_old_payments)
       order.save
     end
   end
@@ -65,24 +65,24 @@ describe Spree::Order do
       end
 
       it 'returns those available checkout payment methods for which guest_checkout is true' do
-        order.available_payment_methods.map(&:name).should =~ [check, credit_card].map(&:name)
+        expect(order.available_payment_methods.map(&:name)).to match_array([check, credit_card].map(&:name))
       end
     end
 
     context 'when user logged in' do
       it 'returns all available payment methods' do
-        order.available_payment_methods.map(&:name).should =~ [check, credit_card, partial_payment_method].map(&:name)
+        expect(order.available_payment_methods.map(&:name)).to match_array([check, credit_card, partial_payment_method].map(&:name))
       end
     end
   end
 
   describe "#available_partial_payments" do
-    it { order.available_partial_payments.should =~ [partial_payment_method] }
+    it { expect(order.available_partial_payments).to match_array([partial_payment_method]) }
   end
 
   describe "#checkout_payments" do
     it "return payments with state equal to checkout" do
-      order.send(:checkout_payments).should =~ [@payment1, @payment4]
+      expect(order.send(:checkout_payments)).to match_array([@payment1, @payment4])
     end
   end
 
@@ -91,41 +91,41 @@ describe Spree::Order do
       @payment5 = order.payments.create! :payment_method_id => partial_payment_method.id, :state => 'checkout', :order_id => order.id, :not_to_be_invalidated => true
       @payment6 = order.payments.create! :payment_method_id => partial_payment_method.id, :state => 'checkout', :order_id => order.id, :not_to_be_invalidated => true
     end
-    
+
     it "marks payment1 as invalid" do
       order.send(:invalidate_old_payments)
       @payment1.reload
-      @payment1.should be_invalid
+      expect(@payment1).to be_invalid
     end
 
     it "marks payment4 as invalid" do
       order.send(:invalidate_old_payments)
       @payment4.reload
-      @payment4.should be_invalid
+      expect(@payment4).to be_invalid
     end
 
     it "does not change payment2 state" do
       order.send(:invalidate_old_payments)
       @payment2.reload
-      @payment2.should be_completed
+      expect(@payment2).to be_completed
     end
 
     it "does not change payment3 state" do
       order.send(:invalidate_old_payments)
       @payment3.reload
-      @payment3.should be_pending
+      expect(@payment3).to be_pending
     end
 
     it 'does not change payment5 state' do
       order.send(:invalidate_old_payments)
       @payment5.reload
-      @payment5.should be_checkout
+      expect(@payment5).to be_checkout
     end
 
     it 'does not change payment6 state' do
       order.send(:invalidate_old_payments)
       @payment6.reload
-      @payment6.should be_checkout
+      expect(@payment6).to be_checkout
     end
   end
 
@@ -138,11 +138,11 @@ describe Spree::Order do
 
       it "sets errors" do
         order.send(:ensure_only_one_non_partial_payment_method_present_if_multiple_payments)
-        order.errors[:base].should eq(["Only one non partial payment method can be clubbed with partial payments."])
+        expect(order.errors[:base]).to eq(["Only one non partial payment method can be clubbed with partial payments."])
       end
 
       it "returns false" do
-        order.send(:ensure_only_one_non_partial_payment_method_present_if_multiple_payments).should be_false
+        expect(order.send(:ensure_only_one_non_partial_payment_method_present_if_multiple_payments)).to be_falsey
       end
     end
 
@@ -153,7 +153,7 @@ describe Spree::Order do
 
       it 'does not set errors' do
         order.send(:ensure_only_one_non_partial_payment_method_present_if_multiple_payments)
-        order.errors.should be_empty
+        expect(order.errors).to be_empty
       end
     end
   end
@@ -169,13 +169,13 @@ describe Spree::Order do
       end
 
       it 'inserts source params' do
-        order.should_receive(:insert_source_params)
+        expect(order).to receive(:insert_source_params)
         update_params_payment_source
       end
 
       it 'sets remaining amount to non partial payment method' do
         update_params_payment_source
-        @updating_params[:order][:payments_attributes]['0'][:amount].should eq(200)
+        expect(@updating_params[:order][:payments_attributes]['0'][:amount]).to eq(200)
       end
     end
   end
@@ -187,18 +187,18 @@ describe Spree::Order do
 
     it "inserst source attributes" do
       insert_source_params
-      @updating_params[:order][:payments_attributes]['0'][:source_attributes].should eq(@payment_source[credit_card.id])
+      expect(@updating_params[:order][:payments_attributes]['0'][:source_attributes]).to eq(@payment_source[credit_card.id])
     end
 
     it "deletes payment source" do
       insert_source_params
-      @updating_params[:payment_source].should eq(nil)
+      expect(@updating_params[:payment_source]).to eq(nil)
     end
   end
 
   describe "#order_total_after_partial_payments" do
     it "returns remaing amount after paying through partial payments" do
-      order.send(:order_total_after_partial_payments).should eq(200)
+      expect(order.send(:order_total_after_partial_payments)).to eq(200)
     end
   end
 end
