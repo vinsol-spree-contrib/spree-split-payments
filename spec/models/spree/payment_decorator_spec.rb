@@ -1,13 +1,13 @@
 require 'spec_helper'
 
 describe 'Spree::Payment' do
-  let!(:order) { Spree::Order.create! :email => 'test@example.com' }
-  let!(:partial_payment_method) { Spree::PaymentMethod.create! :name => 'partial payment method', :for_partial => true }
-  let!(:non_partial_payment_method) { Spree::PaymentMethod.create! :name => 'non_partial payment method'}
-  let!(:partial_payment1) { Spree::Payment.create! :payment_method_id => partial_payment_method.id, :order_id => order.id }
-  let!(:partial_payment2) { Spree::Payment.create! :payment_method_id => partial_payment_method.id, :order_id => order.id }
-  let!(:non_partial_payment1) { Spree::Payment.create! :payment_method_id => non_partial_payment_method.id, :order_id => order.id }
-  let!(:non_partial_payment2) { Spree::Payment.create! :payment_method_id => non_partial_payment_method.id, :order_id => order.id }
+  let!(:order) { Spree::Order.create! email: 'test@example.com' }
+  let!(:partial_payment_method) { Spree::PaymentMethod.create! name: 'partial payment method', for_partial: true }
+  let!(:non_partial_payment_method) { Spree::PaymentMethod.create! name: 'non_partial payment method'}
+  let!(:partial_payment1) { Spree::Payment.create! payment_method_id: partial_payment_method.id, order_id: order.id }
+  let!(:partial_payment2) { Spree::Payment.create! payment_method_id: partial_payment_method.id, order_id: order.id }
+  let!(:non_partial_payment1) { Spree::Payment.create! payment_method_id: non_partial_payment_method.id, order_id: order.id }
+  let!(:non_partial_payment2) { Spree::Payment.create! payment_method_id: non_partial_payment_method.id, order_id: order.id }
 
   describe "self.partial" do
     it { expect(Spree::Payment.partial).to match_array([partial_payment1, partial_payment2]) }
@@ -15,7 +15,7 @@ describe 'Spree::Payment' do
 
   context 'before_create' do
     before do
-      @payment = Spree::Payment.new :payment_method_id => partial_payment_method.id, :order_id => order.id
+      @payment = Spree::Payment.new payment_method_id: partial_payment_method.id, order_id: order.id
     end
 
     it "marks payment as partial" do

@@ -7,21 +7,21 @@ class Spree::PaymentMethod::Partial < Spree::PaymentMethod
 end
 
 describe Spree::Order do
-  let!(:user) { Spree::User.create! :email => 'test@example.com', :password => 'password' }
-  let!(:order) { Spree::Order.create!(:email => 'test-account@myweb.com', :total => 500, :user_id => user.id) }
-  let!(:partial_payment_method) { Spree::PaymentMethod::Partial.create! :for_partial => true, :name => 'partial_payment_method', :active => true, :display_on => "" }
-  let!(:check) { Spree::PaymentMethod.create! :name => 'check', :active => true, :display_on => "" }
-  let!(:credit_card) { Spree::PaymentMethod.create! :name => 'credit card', :active => true, :display_on => "" }
+  let!(:user) { Spree::User.create! email: 'test@example.com', password: 'password' }
+  let!(:order) { Spree::Order.create!(email: 'test-account@myweb.com', total: 500, user_id: user.id) }
+  let!(:partial_payment_method) { Spree::PaymentMethod::Partial.create! for_partial: true, name: 'partial_payment_method', active: true, display_on: "" }
+  let!(:check) { Spree::PaymentMethod.create! name: 'check', active: true, display_on: "" }
+  let!(:credit_card) { Spree::PaymentMethod.create! name: 'credit card', active: true, display_on: "" }
 
   before do
-    @payment1 = Spree::Payment.create! :payment_method_id => partial_payment_method.id, :state => 'checkout', :order_id => order.id
-    @payment2 = Spree::Payment.create! :payment_method_id => partial_payment_method.id, :state => 'completed', :order_id => order.id
-    @payment3 = Spree::Payment.create! :payment_method_id => partial_payment_method.id, :state => "pending", :order_id => order.id
-    @payment4 = Spree::Payment.create! :payment_method_id => partial_payment_method.id, :state => 'checkout', :order_id => order.id
+    @payment1 = Spree::Payment.create! payment_method_id: partial_payment_method.id, state: 'checkout', order_id: order.id
+    @payment2 = Spree::Payment.create! payment_method_id: partial_payment_method.id, state: 'completed', order_id: order.id
+    @payment3 = Spree::Payment.create! payment_method_id: partial_payment_method.id, state: "pending", order_id: order.id
+    @payment4 = Spree::Payment.create! payment_method_id: partial_payment_method.id, state: 'checkout', order_id: order.id
 
-    @payment_source = {credit_card.id => {:number => 'credit card number', :cvv => 'cvv'}}
+    @payment_source = {credit_cardid: {number: 'credit card number', cvv: 'cvv'}}
 
-    @updating_params = {:order => {:payments_attributes => { "0" => { :payment_method_id => credit_card.id }, '1' => { :payment_method_id => partial_payment_method.id, :amount => 100 }, '2' => { :payment_method_id => partial_payment_method.id, :amount => 200} } }, :payment_source => @payment_source }
+    @updating_params = {order: {payments_attributes: { "0" => { payment_method_id: credit_card.id }, '1' => { payment_method_id: partial_payment_method.id, amount: 100 }, '2' => { payment_method_id: partial_payment_method.id, amount: 200} } }, payment_source: @payment_source }
 
     order.instance_variable_set(:@updating_params, @updating_params)
   end
@@ -88,8 +88,8 @@ describe Spree::Order do
 
   describe "#invalidate_old_payments" do
     before do
-      @payment5 = order.payments.create! :payment_method_id => partial_payment_method.id, :state => 'checkout', :order_id => order.id, :not_to_be_invalidated => true
-      @payment6 = order.payments.create! :payment_method_id => partial_payment_method.id, :state => 'checkout', :order_id => order.id, :not_to_be_invalidated => true
+      @payment5 = order.payments.create! payment_method_id: partial_payment_method.id, state: 'checkout', order_id: order.id, not_to_be_invalidated: true
+      @payment6 = order.payments.create! payment_method_id: partial_payment_method.id, state: 'checkout', order_id: order.id, not_to_be_invalidated: true
     end
 
     it "marks payment1 as invalid" do
@@ -132,8 +132,8 @@ describe Spree::Order do
   describe "#ensure_only_one_non_partial_payment_method_present_if_multiple_payments" do
     context 'when more than one non_partial_payment_method present' do
       before do
-        order.payments.create! :payment_method_id => check.id, :state => 'checkout'
-        order.payments.create! :payment_method_id => credit_card.id, :state => 'checkout'
+        order.payments.create! payment_method_id: check.id, state: 'checkout'
+        order.payments.create! payment_method_id: credit_card.id, state: 'checkout'
       end
 
       it "sets errors" do
@@ -148,7 +148,7 @@ describe Spree::Order do
 
     context 'when not more than one non_partial_payment_method present' do
       before do
-        order.payments.create! :payment_method_id => check.id, :state => 'checkout'
+        order.payments.create! payment_method_id: check.id, state: 'checkout'
       end
 
       it 'does not set errors' do
