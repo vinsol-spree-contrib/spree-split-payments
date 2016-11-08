@@ -6,3 +6,5 @@ en:
   spree:
     supports_partial_payment: "Use it for partial payments"
     partial_priority: "Set Priority"
+    club_my_payment_with: "Club my payment with"
+    amount_to_be_paid: "Amount to be paid"
