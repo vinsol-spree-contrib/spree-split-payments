@@ -1,0 +1,6 @@
+ru:
+  spree:
+    supports_partial_payment: "Использовать для частичной оплаты"
+    partial_priority: "Приоритет при оплате"
+    club_my_payment_with: "Оплатить с помощью"
+    amount_to_be_paid: "Сумма для оплаты"

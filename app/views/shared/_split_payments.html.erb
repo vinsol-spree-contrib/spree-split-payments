@@ -1,11 +1,11 @@
 <% if @order.available_partial_payments.present? %>
   <br>
-  <b>Club my payment with</b>
+  <b><%= Spree.t(:club_my_payment_with) %></b>
   <table id="split_payment_options" class='table' border='2'>
     <tr>
       <th></th>
-      <th>Payment Method</th>
-      <th>Amount to be paid</th>
+      <th><%= Spree::PaymentMethod.model_name.human %></th>
+      <th><%= Spree.t(:amount_to_be_paid) %></th>
     </tr>
 
   <% @order.available_partial_payments.each do |payment_method| %>
