@@ -1,0 +1,4 @@
+ru:
+  spree:
+    supports_partial_payment: "Использовать для частичной оплаты"
+    partial_priority: "Приоритет при оплате"
