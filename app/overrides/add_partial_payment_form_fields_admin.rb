@@ -4,24 +4,20 @@ Deface::Override.new(
   name: 'add partial payment form fields',
   insert_after: "[data-hook='active']",
   text: %q{
-    <div data-hook="for_partial" class="form-group">
-      <strong><%= Spree.t(:supports_partial_payment) %></strong>
-      <div class="radio">
-        <%= label_tag :payment_method_for_partial_true do %>
+    <div data-hook="for_partial" class="field">
+      <%= label_tag nil, Spree.t(:supports_partial_payment) %>
+      <ul>
+        <li>
           <%= radio_button :payment_method, :for_partial, true %>
-          <%= Spree.t(:say_yes) %>
-        <% end %>
-      </div>
-
-      <div class="radio">
-        <%= label_tag :payment_method_for_partial_false do %>
+          <%= label_tag nil, Spree.t(:say_yes) %>
+        </li>
+        <li>
           <%= radio_button :payment_method, :for_partial, false %>
-          <%= Spree.t(:say_no) %>
-        <% end %>
-      </div>
+          <%= label_tag nil, Spree.t(:say_no) %>
+        </li>
+      </ul>
     </div>
-
-    <div data-hook="partial_priority" class="form-group">
+    <div data-hook="partial_priority" class="field">
       <%= label_tag nil, Spree.t(:partial_priority) %>
       <%= select_tag "payment_method[partial_priority]",
           options_for_select(1..5, @object.partial_priority) %>
